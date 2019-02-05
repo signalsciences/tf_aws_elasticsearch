@@ -40,6 +40,10 @@ resource "aws_elasticsearch_domain" "es_vpc" {
     kms_key_id = "${var.kms_key_id}"
   }
 
+  node_to_node_encryption {
+    enabled = "${var.node_to_node_encryption}"
+  }
+
   log_publishing_options = [{
       log_type                 = "INDEX_SLOW_LOGS"
       cloudwatch_log_group_arn = "${var.index_slow_log_cloudwatch_log_group}"

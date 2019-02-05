@@ -126,6 +126,10 @@ variable "es_app_log_enable" {
   default     = false
 }
 
+variable "node_to_node_encryption" {
+  default     = false
+}
+
 
 # vim: set et fenc=utf-8 ff=unix ft=terraform sts=2 sw=2 ts=2 : 
 
