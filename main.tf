@@ -1,3 +1,7 @@
+locals = {
+  log_groups = ["${var.index_slow_log_cloudwatch_log_group}", "${var.search_slow_log_cloudwatch_log_group}", "${var.es_app_log_cloudwatch_log_group}"]
+}
+
 # Elasticsearch domain
 data "aws_iam_policy_document" "es_management_access" {
   count = "${length(var.vpc_options["subnet_ids"]) > 0 ? 0 : 1}"
@@ -26,6 +30,12 @@ data "aws_iam_policy_document" "es_management_access" {
     }
   }
 }
+
+resource "aws_cloudwatch_log_group" "elasticsearch_log_group" {
+  count = "${length(local.log_groups)}"
+  name = "${element(local.log_groups, count.index)}"
+}
+
 
 data "aws_iam_policy_document" "elasticsearch-log-publishing-policy" {
   count           = "${(var.index_slow_log_enabled || var.search_slow_log_enabled || var.es_app_log_enable) ? 1 : 0}"
