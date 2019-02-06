@@ -27,10 +27,36 @@ data "aws_iam_policy_document" "es_management_access" {
   }
 }
 
+data "aws_iam_policy_document" "elasticsearch-log-publishing-policy" {
+  count           = "${(var.index_slow_log_enabled || var.search_slow_log_enabled || var.es_app_log_enable) ? 0 : 1}"
+  statement {
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:PutLogEventsBatch",
+    ]
+
+    resources = [
+      "${formatlist("%s:*", distinct(compact(list(var.index_slow_log_cloudwatch_log_group, var.search_slow_log_cloudwatch_log_group, var.es_app_log_cloudwatch_log_group))) )}"
+    ]
+
+    principals {
+      identifiers = ["es.amazonaws.com"]
+      type        = "Service"
+    }
+  }
+}
+
+resource "aws_cloudwatch_log_resource_policy" "elasticsearch-log-publishing-policy" {
+  policy_document = "${data.aws_iam_policy_document.elasticsearch-log-publishing-policy.json}"
+  policy_name     = "elasticsearch-log-publishing-policy-${local.domain_name}"
+}
+
 resource "aws_elasticsearch_domain" "es" {
   count                 = "${length(var.vpc_options["subnet_ids"]) > 0 ? 0 : 1}"
   domain_name           = "${local.domain_name}"
   elasticsearch_version = "${var.es_version}"
+  depends_on            = ["aws_cloudwatch_log_resource_policy.elasticsearch-log-publishing-policy"]
 
   log_publishing_options = [{
       log_type                 = "INDEX_SLOW_LOGS"
@@ -73,9 +99,8 @@ resource "aws_elasticsearch_domain" "es" {
 }
 
 resource "aws_elasticsearch_domain_policy" "es_management_access" {
-  count           = "${length(var.vpc_options["subnet_ids"]) > 0 ? 0 : 1}"
+  count           =  "${length(var.vpc_options["subnet_ids"]) > 0 ? 0 : 1}"
   domain_name     = "${local.domain_name}"
   access_policies = "${data.aws_iam_policy_document.es_management_access.json}"
 }
-
 

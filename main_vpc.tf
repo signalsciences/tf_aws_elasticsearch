@@ -1,5 +1,6 @@
-/*Add a new set of data.aws_iam_policy_document, aws_elasticsearch_domain, aws_elasticsearch_domain_policy. Because currently terraform/aws_elasticsearch_domain 
-does not handle properly null/empty "vpc_options" */
+/*
+Add a new set of data.aws_iam_policy_document, aws_elasticsearch_domain, aws_elasticsearch_domain_policy, because currently terraform/aws_elasticsearch_domain does not handle properly null/empty "vpc_options"
+*/
 
 /*Need to use interpolation for output variables until issue #15605 is solved */
 
@@ -34,6 +35,7 @@ resource "aws_elasticsearch_domain" "es_vpc" {
   count                 = "${length(var.vpc_options["subnet_ids"]) > 0 ? 1 : 0}"
   domain_name           = "${local.domain_name}"
   elasticsearch_version = "${var.es_version}"
+  depends_on            = ["aws_cloudwatch_log_resource_policy.elasticsearch-log-publishing-policy"]
 
   encrypt_at_rest = {
     enabled    = "${var.encrypt_at_rest}"
