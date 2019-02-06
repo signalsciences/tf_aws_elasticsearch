@@ -78,5 +78,4 @@ resource "aws_elasticsearch_domain_policy" "es_management_access" {
   access_policies = "${data.aws_iam_policy_document.es_management_access.json}"
 }
 
-# vim: set et fenc= ff=unix ft=terraform sts=2 sw=2 ts=2 : 
 
