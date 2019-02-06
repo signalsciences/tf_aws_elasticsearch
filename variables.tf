@@ -104,36 +104,36 @@ variable "dedicated_master_threshold" {
 
 variable "index_slow_log_cloudwatch_log_group" {
   description = "ARN for the CloudWatch log group to be use for the index slow logs"
-  default     = ""
+  default     = "/aws/aes/domains/tf-es-agent-prod-or/index-logs"
 }
 
 variable "index_slow_log_enabled" {
   description = "Enable the index slow logging (default false)"
-  default = false
+  default = true
 }
 
 variable "search_slow_log_cloudwatch_log_group" {
   description = "ARN for the CloudWatch log group to be use for the search slow logs"
-  default     = ""
+  default     = "/aws/aes/domains/tf-es-agent-prod-or/search-logs"
 }
 
 variable "search_slow_log_enabled" {
   description = "Enable the search slow logging (default false)"
-  default     = false
+  default     = true
 }
 
 variable "es_app_log_cloudwatch_log_group" {
   description = "ARN for the CloudWatch log group to be use for the Elasticsearch application logs"
-  default     = ""
+  default     = "/aws/aes/domains/tf-es-agent-prod-or/application-logs"
 }
 
 variable "es_app_log_enable" {
   description = "Enable the Elasticsearch application logging (default false)"
-  default     = false
+  default     = true
 }
 
 variable "node_to_node_encryption" {
-  default     = false
+  default     = true
 }
 
 

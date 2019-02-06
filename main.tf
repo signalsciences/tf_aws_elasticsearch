@@ -28,7 +28,7 @@ data "aws_iam_policy_document" "es_management_access" {
 }
 
 data "aws_iam_policy_document" "elasticsearch-log-publishing-policy" {
-  count           = "${(var.index_slow_log_enabled || var.search_slow_log_enabled || var.es_app_log_enable) ? 0 : 1}"
+  count           = "${(var.index_slow_log_enabled || var.search_slow_log_enabled || var.es_app_log_enable) ? 1 : 0}"
   statement {
     actions = [
       "logs:CreateLogStream",
@@ -48,6 +48,7 @@ data "aws_iam_policy_document" "elasticsearch-log-publishing-policy" {
 }
 
 resource "aws_cloudwatch_log_resource_policy" "elasticsearch-log-publishing-policy" {
+  count           = "${(var.index_slow_log_enabled || var.search_slow_log_enabled || var.es_app_log_enable) ? 1 : 0}"
   policy_document = "${data.aws_iam_policy_document.elasticsearch-log-publishing-policy.json}"
   policy_name     = "elasticsearch-log-publishing-policy-${local.domain_name}"
 }
