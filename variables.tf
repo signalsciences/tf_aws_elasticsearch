@@ -34,7 +34,7 @@ variable "management_iam_roles" {
   default     = ["*"]
 }
 
-variable "admin_group_arns" {
+variable "admin_groups" {
   description = "List of IAM group ARNs from which to permit admin policy attachment."
   type        = "list"
   default     = []

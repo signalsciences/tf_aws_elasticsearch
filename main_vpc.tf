@@ -50,7 +50,7 @@ resource "aws_iam_policy" "es_admin_policy" {
 
 resource "aws_iam_policy_attachment" "attach_es_admin_policy_admin_group" {
   name       = "attach_es_admin_policy_admin_group"
-  groups     = ["${var.admin_group_arns}"]
+  groups     = ["${var.admin_groups}"]
   policy_arn = "${aws_iam_policy.es_admin_policy.arn}"
 }
 
