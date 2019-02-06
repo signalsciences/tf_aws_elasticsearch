@@ -31,6 +31,29 @@ data "aws_iam_policy_document" "es_vpc_management_access" {
   }
 }
 
+/* iam doesnt allow user groups in above resource based policies */
+data "aws_iam_policy_document" "es_identity_based_management_access" {
+  statement {
+    actions = [ "es:*" ]
+
+    resources = [
+      "${aws_elasticsearch_domain.es_vpc.arn}",
+      "${aws_elasticsearch_domain.es_vpc.arn}/*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "es_admin_policy" {
+  name   = "EsAdminPolicy"
+  policy = "${data.aws_iam_policy_document.es_identity_based_management_access.json}"
+}
+
+resource "aws_iam_policy_attachment" "attach_es_admin_policy_admin_group" {
+  name       = "attach_es_admin_policy_admin_group"
+  groups     = ["${var.admin_group_arns}"]
+  policy_arn = "${aws_iam_policy.es_admin_policy.arn}"
+}
+
 resource "aws_elasticsearch_domain" "es_vpc" {
   count                 = "${length(var.vpc_options["subnet_ids"]) > 0 ? 1 : 0}"
   domain_name           = "${local.domain_name}"
