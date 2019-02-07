@@ -71,15 +71,15 @@ resource "aws_elasticsearch_domain" "es_vpc" {
 
   log_publishing_options = [{
       log_type                 = "INDEX_SLOW_LOGS"
-      cloudwatch_log_group_arn = "${var.index_slow_log_cloudwatch_log_group}"
+      cloudwatch_log_group_arn = "${aws_cloudwatch_log_group.index_slow_log.arn}"
       enabled                  = "${var.index_slow_log_enabled}"
     }, {
       log_type                 = "SEARCH_SLOW_LOGS"
-      cloudwatch_log_group_arn = "${var.search_slow_log_cloudwatch_log_group}"
+      cloudwatch_log_group_arn = "${aws_cloudwatch_log_group.search_slow_log.arn}"
       enabled                  = "${var.search_slow_log_enabled}"
     }, {
       log_type                 = "ES_APPLICATION_LOGS"
-      cloudwatch_log_group_arn = "${var.es_app_log_cloudwatch_log_group}"
+      cloudwatch_log_group_arn = "${aws_cloudwatch_log_group.es_app_log.arn}"
       enabled                  = "${var.es_app_log_enable}"
     }
   ]

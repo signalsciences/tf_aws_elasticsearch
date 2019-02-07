@@ -31,13 +31,19 @@ data "aws_iam_policy_document" "es_management_access" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "elasticsearch_log_group" {
-  count = "${length(local.log_groups)}"
-  name = "${element(local.log_groups, count.index)}"
+resource "aws_cloudwatch_log_group" "index_slow_log" {
+  name = "${var.index_slow_log_cloudwatch_log_group}"
+}
+resource "aws_cloudwatch_log_group" "search_slow_log" {
+  name = "${var.search_slow_log_cloudwatch_log_group}"
 }
 
+resource "aws_cloudwatch_log_group" "es_app_log" {
+  name = "${var.es_app_log_cloudwatch_log_group}"
+}
 
 data "aws_iam_policy_document" "elasticsearch-log-publishing-policy" {
+  depends_on            = ["aws_cloudwatch_log_group.index_slow_log", "aws_cloudwatch_log_group.search_slow_log", "aws_cloudwatch_log_group.es_app_log"]
   count           = "${(var.index_slow_log_enabled || var.search_slow_log_enabled || var.es_app_log_enable) ? 1 : 0}"
   statement {
     actions = [
@@ -46,9 +52,7 @@ data "aws_iam_policy_document" "elasticsearch-log-publishing-policy" {
       "logs:PutLogEventsBatch",
     ]
 
-    resources = [
-      "${formatlist("%s:*", distinct(compact(list(var.index_slow_log_cloudwatch_log_group, var.search_slow_log_cloudwatch_log_group, var.es_app_log_cloudwatch_log_group))) )}"
-    ]
+    resources = [ "arn:aws:logs:*" ]
 
     principals {
       identifiers = ["es.amazonaws.com"]
@@ -71,15 +75,15 @@ resource "aws_elasticsearch_domain" "es" {
 
   log_publishing_options = [{
       log_type                 = "INDEX_SLOW_LOGS"
-      cloudwatch_log_group_arn = "${var.index_slow_log_cloudwatch_log_group}"
+      cloudwatch_log_group_arn = "${aws_cloudwatch_log_group.index_slow_log.arn}"
       enabled                  = "${var.index_slow_log_enabled}"
     }, {
       log_type                 = "SEARCH_SLOW_LOGS"
-      cloudwatch_log_group_arn = "${var.search_slow_log_cloudwatch_log_group}"
+      cloudwatch_log_group_arn = "${aws_cloudwatch_log_group.search_slow_log.arn}"
       enabled                  = "${var.search_slow_log_enabled}"
     }, {
       log_type                 = "ES_APPLICATION_LOGS"
-      cloudwatch_log_group_arn = "${var.es_app_log_cloudwatch_log_group}"
+      cloudwatch_log_group_arn = "${aws_cloudwatch_log_group.es_app_log.arn}"
       enabled                  = "${var.es_app_log_enable}"
     }
   ]
