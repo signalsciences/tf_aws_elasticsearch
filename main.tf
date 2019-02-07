@@ -43,7 +43,6 @@ resource "aws_cloudwatch_log_group" "es_app_log" {
 }
 
 data "aws_iam_policy_document" "elasticsearch-log-publishing-policy" {
-  depends_on            = ["aws_cloudwatch_log_group.index_slow_log", "aws_cloudwatch_log_group.search_slow_log", "aws_cloudwatch_log_group.es_app_log"]
   count           = "${(var.index_slow_log_enabled || var.search_slow_log_enabled || var.es_app_log_enable) ? 1 : 0}"
   statement {
     actions = [
