@@ -97,6 +97,11 @@ variable "domain_prefix" {
   default     = "tf-"
 }
 
+variable "index_prefix" {
+  description = "String for index prefix prevent deletion policy. Default: logstash-"
+  default     = "logstash-"
+}
+
 variable "dedicated_master_threshold" {
   description = "The number of instances above which dedicated master nodes will be used. Default: 10"
   default     = 10
