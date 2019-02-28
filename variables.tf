@@ -97,9 +97,9 @@ variable "domain_prefix" {
   default     = "tf-"
 }
 
-variable "index_prefix" {
-  description = "String for index prefix prevent deletion policy. Default: logstash-"
-  default     = "logstash-"
+variable "deny_del_indices_prefixes" {
+  description = "String for index prefix prevent deletion policy. Default: [logstash]"
+  default     = ["logstash"]
 }
 
 variable "dedicated_master_threshold" {

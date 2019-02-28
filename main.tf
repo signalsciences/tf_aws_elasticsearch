@@ -37,9 +37,7 @@ data "aws_iam_policy_document" "es_management_access" {
       "es:ESHttpDelete",
     ]
 
-    resources = [
-      "${aws_elasticsearch_domain.es.arn}/${var.index_prefix}*/*/*"
-    ]
+    resources = [ "${formatlist("${aws_elasticsearch_domain.es.arn}/%s-*/*/*", var.deny_del_indices_prefixes)}" ]
 
     principals {
       type = "AWS"

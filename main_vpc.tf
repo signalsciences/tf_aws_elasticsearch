@@ -15,7 +15,10 @@ data "aws_iam_policy_document" "es_vpc_management_access" {
 
   statement {
     actions = [
-      "es:*",
+      "es:ESHttpGet",
+      "es:ESHttpHead",
+      "es:ESHttpPost",
+      "es:ESHttpPut"
     ]
 
     resources = [
@@ -29,17 +32,44 @@ data "aws_iam_policy_document" "es_vpc_management_access" {
       identifiers = ["${distinct(compact(var.management_iam_roles))}"]
     }
   }
+
+  statement {
+    actions = [
+      "es:ESHttpDelete",
+    ]
+
+    resources = [ "${formatlist("${aws_elasticsearch_domain.es_vpc.arn}/%s-*/*/*", var.deny_del_indices_prefixes)}" ]
+
+    principals {
+      type = "AWS"
+
+      identifiers = ["${distinct(compact(var.management_iam_roles))}"]
+    }
+  }
 }
 
 /* iam doesnt allow user groups in above resource based policies */
 data "aws_iam_policy_document" "es_identity_based_management_access" {
   statement {
-    actions = [ "es:*" ]
+    actions = [
+      "es:ESHttpGet",
+      "es:ESHttpHead",
+      "es:ESHttpPost",
+      "es:ESHttpPut"
+    ]
 
     resources = [
       "${aws_elasticsearch_domain.es_vpc.arn}",
       "${aws_elasticsearch_domain.es_vpc.arn}/*",
     ]
+  }
+
+  statement {
+    actions = [
+      "es:ESHttpDelete",
+    ]
+
+    resources = [ "${formatlist("${aws_elasticsearch_domain.es_vpc.arn}/%s-*/*/*", var.deny_del_indices_prefixes)}" ] 
   }
 }
 
