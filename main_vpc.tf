@@ -18,6 +18,7 @@ data "aws_iam_policy_document" "es_vpc_management_access" {
       "es:ESHttpGet",
       "es:ESHttpHead",
       "es:ESHttpPost",
+      "es:ESHttpDelete",
       "es:ESHttpPut"
     ]
 
@@ -25,20 +26,6 @@ data "aws_iam_policy_document" "es_vpc_management_access" {
       "${aws_elasticsearch_domain.es_vpc.arn}",
       "${aws_elasticsearch_domain.es_vpc.arn}/*",
     ]
-
-    principals {
-      type = "AWS"
-
-      identifiers = ["${distinct(compact(var.management_iam_roles))}"]
-    }
-  }
-
-  statement {
-    actions = [
-      "es:ESHttpDelete",
-    ]
-
-    resources = [ "${formatlist("${aws_elasticsearch_domain.es_vpc.arn}/%s-*/*/*", var.deny_del_indices_prefixes)}" ]
 
     principals {
       type = "AWS"
@@ -55,6 +42,7 @@ data "aws_iam_policy_document" "es_identity_based_management_access" {
       "es:ESHttpGet",
       "es:ESHttpHead",
       "es:ESHttpPost",
+      "es:ESHttpDelete",
       "es:ESHttpPut"
     ]
 
@@ -62,14 +50,6 @@ data "aws_iam_policy_document" "es_identity_based_management_access" {
       "${aws_elasticsearch_domain.es_vpc.arn}",
       "${aws_elasticsearch_domain.es_vpc.arn}/*",
     ]
-  }
-
-  statement {
-    actions = [
-      "es:ESHttpDelete",
-    ]
-
-    resources = [ "${formatlist("${aws_elasticsearch_domain.es_vpc.arn}/%s-*/*/*", var.deny_del_indices_prefixes)}" ] 
   }
 }
 
