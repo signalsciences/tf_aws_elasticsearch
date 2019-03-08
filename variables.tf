@@ -34,6 +34,12 @@ variable "management_iam_roles" {
   default     = ["*"]
 }
 
+variable "super_management_iam_roles" {
+  description = "List of IAM role ARNs from which to permit management traffic (default ['']).  Note that a client must match both the IP address and the IAM role patterns in order to be permitted access."
+  type        = "list"
+  default     = [""]
+}
+
 variable "admin_groups" {
   description = "List of IAM group ARNs from which to permit admin policy attachment."
   type        = "list"

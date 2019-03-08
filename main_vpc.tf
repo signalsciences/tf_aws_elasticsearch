@@ -35,6 +35,20 @@ data "aws_iam_policy_document" "es_vpc_management_access" {
 
   statement {
     actions = [
+      "es:ESHttpDelete"
+    ]
+
+    resources = ["*"]
+
+    principals {
+      type = "AWS"
+
+      identifiers = ["${distinct(compact(var.super_management_iam_roles))}"]
+    }
+  }
+
+  statement {
+    actions = [
       "es:ESHttpDelete",
     ]
 
