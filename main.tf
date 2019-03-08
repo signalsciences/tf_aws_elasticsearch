@@ -11,7 +11,6 @@ data "aws_iam_policy_document" "es_management_access" {
       "es:ESHttpGet",
       "es:ESHttpHead",
       "es:ESHttpPost",
-      "es:ESHttpDelete",
       "es:ESHttpPut"
     ]
 
