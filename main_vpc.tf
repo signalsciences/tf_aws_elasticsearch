@@ -18,7 +18,7 @@ data "aws_iam_policy_document" "es_vpc_management_access" {
       "es:ESHttpGet",
       "es:ESHttpHead",
       "es:ESHttpPost",
-      "es:ESHttpPut"
+      "es:ESHttpPut",
     ]
 
     resources = [
@@ -35,7 +35,7 @@ data "aws_iam_policy_document" "es_vpc_management_access" {
 
   statement {
     actions = [
-      "es:ESHttpDelete"
+      "es:ESHttpDelete",
     ]
 
     resources = ["*"]
@@ -52,7 +52,7 @@ data "aws_iam_policy_document" "es_vpc_management_access" {
       "es:ESHttpDelete",
     ]
 
-    resources = [ "${formatlist("${aws_elasticsearch_domain.es_vpc.arn}/%s-*/*/*", var.deny_del_indices_prefixes)}" ]
+    resources = ["${formatlist("${aws_elasticsearch_domain.es_vpc.arn}/%s-*/*/*", var.deny_del_indices_prefixes)}"]
 
     principals {
       type = "AWS"
@@ -68,6 +68,10 @@ resource "aws_elasticsearch_domain" "es_vpc" {
   elasticsearch_version = "${var.es_version}"
   depends_on            = ["aws_cloudwatch_log_resource_policy.elasticsearch-log-publishing-policy"]
 
+  lifecycle {
+    ignore_changes = ["elasticsearch_version", "instance_type", "instance_count"]
+  }
+
   encrypt_at_rest = {
     enabled    = "${var.encrypt_at_rest}"
     kms_key_id = "${var.kms_key_id}"
@@ -78,18 +82,20 @@ resource "aws_elasticsearch_domain" "es_vpc" {
   }
 
   log_publishing_options = [{
-      log_type                 = "INDEX_SLOW_LOGS"
-      cloudwatch_log_group_arn = "${aws_cloudwatch_log_group.index_slow_log.arn}"
-      enabled                  = "${var.index_slow_log_enabled}"
-    }, {
+    log_type                 = "INDEX_SLOW_LOGS"
+    cloudwatch_log_group_arn = "${aws_cloudwatch_log_group.index_slow_log.arn}"
+    enabled                  = "${var.index_slow_log_enabled}"
+  },
+    {
       log_type                 = "SEARCH_SLOW_LOGS"
       cloudwatch_log_group_arn = "${aws_cloudwatch_log_group.search_slow_log.arn}"
       enabled                  = "${var.search_slow_log_enabled}"
-    }, {
+    },
+    {
       log_type                 = "ES_APPLICATION_LOGS"
       cloudwatch_log_group_arn = "${aws_cloudwatch_log_group.es_app_log.arn}"
       enabled                  = "${var.es_app_log_enable}"
-    }
+    },
   ]
 
   cluster_config {
