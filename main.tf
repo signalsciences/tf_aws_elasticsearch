@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "es_management_access" {
       "es:ESHttpGet",
       "es:ESHttpHead",
       "es:ESHttpPost",
-      "es:ESHttpPut"
+      "es:ESHttpPut",
     ]
 
     resources = [
@@ -32,12 +32,13 @@ data "aws_iam_policy_document" "es_management_access" {
       values = ["${distinct(compact(var.management_public_ip_addresses))}"]
     }
   }
+
   statement {
     actions = [
       "es:ESHttpDelete",
     ]
 
-    resources = [ "${formatlist("${aws_elasticsearch_domain.es.arn}/%s-*/*/*", var.deny_del_indices_prefixes)}" ]
+    resources = ["${formatlist("${aws_elasticsearch_domain.es.arn}/%s-*/*/*", var.deny_del_indices_prefixes)}"]
 
     principals {
       type = "AWS"
@@ -57,6 +58,7 @@ data "aws_iam_policy_document" "es_management_access" {
 resource "aws_cloudwatch_log_group" "index_slow_log" {
   name = "${var.index_slow_log_cloudwatch_log_group}"
 }
+
 resource "aws_cloudwatch_log_group" "search_slow_log" {
   name = "${var.search_slow_log_cloudwatch_log_group}"
 }
@@ -66,7 +68,8 @@ resource "aws_cloudwatch_log_group" "es_app_log" {
 }
 
 data "aws_iam_policy_document" "elasticsearch-log-publishing-policy" {
-  count           = "${(var.index_slow_log_enabled || var.search_slow_log_enabled || var.es_app_log_enable) ? 1 : 0}"
+  count = "${(var.index_slow_log_enabled || var.search_slow_log_enabled || var.es_app_log_enable) ? 1 : 0}"
+
   statement {
     actions = [
       "logs:CreateLogStream",
@@ -74,7 +77,7 @@ data "aws_iam_policy_document" "elasticsearch-log-publishing-policy" {
       "logs:PutLogEventsBatch",
     ]
 
-    resources = [ "arn:aws:logs:*" ]
+    resources = ["arn:aws:logs:*"]
 
     principals {
       identifiers = ["es.amazonaws.com"]
@@ -95,19 +98,25 @@ resource "aws_elasticsearch_domain" "es" {
   elasticsearch_version = "${var.es_version}"
   depends_on            = ["aws_cloudwatch_log_resource_policy.elasticsearch-log-publishing-policy"]
 
+  lifecycle {
+    ignore_changes = ["elasticsearch_version", "instance_type", "instance_count"]
+  }
+
   log_publishing_options = [{
-      log_type                 = "INDEX_SLOW_LOGS"
-      cloudwatch_log_group_arn = "${aws_cloudwatch_log_group.index_slow_log.arn}"
-      enabled                  = "${var.index_slow_log_enabled}"
-    }, {
+    log_type                 = "INDEX_SLOW_LOGS"
+    cloudwatch_log_group_arn = "${aws_cloudwatch_log_group.index_slow_log.arn}"
+    enabled                  = "${var.index_slow_log_enabled}"
+  },
+    {
       log_type                 = "SEARCH_SLOW_LOGS"
       cloudwatch_log_group_arn = "${aws_cloudwatch_log_group.search_slow_log.arn}"
       enabled                  = "${var.search_slow_log_enabled}"
-    }, {
+    },
+    {
       log_type                 = "ES_APPLICATION_LOGS"
       cloudwatch_log_group_arn = "${aws_cloudwatch_log_group.es_app_log.arn}"
       enabled                  = "${var.es_app_log_enable}"
-    }
+    },
   ]
 
   cluster_config {
@@ -136,8 +145,7 @@ resource "aws_elasticsearch_domain" "es" {
 }
 
 resource "aws_elasticsearch_domain_policy" "es_management_access" {
-  count           =  "${length(var.vpc_options["subnet_ids"]) > 0 ? 0 : 1}"
+  count           = "${length(var.vpc_options["subnet_ids"]) > 0 ? 0 : 1}"
   domain_name     = "${local.domain_name}"
   access_policies = "${data.aws_iam_policy_document.es_management_access.json}"
 }
-

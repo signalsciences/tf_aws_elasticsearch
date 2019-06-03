@@ -120,7 +120,7 @@ variable "index_slow_log_cloudwatch_log_group" {
 
 variable "index_slow_log_enabled" {
   description = "Enable the index slow logging (default false)"
-  default = true
+  default     = true
 }
 
 variable "search_slow_log_cloudwatch_log_group" {
@@ -144,9 +144,8 @@ variable "es_app_log_enable" {
 }
 
 variable "node_to_node_encryption" {
-  default     = true
+  default = true
 }
-
 
 # vim: set et fenc=utf-8 ff=unix ft=terraform sts=2 sw=2 ts=2 : 
 
