@@ -69,7 +69,9 @@ resource "aws_elasticsearch_domain" "es_vpc" {
   depends_on            = ["aws_cloudwatch_log_resource_policy.elasticsearch-log-publishing-policy"]
 
   lifecycle {
-    ignore_changes = ["elasticsearch_version", "instance_type", "instance_count"]
+    # ignoring vpc_options because it has three subnets, TF only supports two.
+    # the rest are ignored so they can be changed by #hotchip
+    ignore_changes = ["elasticsearch_version", "instance_type", "instance_count", "vpc_options"]
   }
 
   encrypt_at_rest = {
