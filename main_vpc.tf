@@ -71,7 +71,7 @@ resource "aws_elasticsearch_domain" "es_vpc" {
   lifecycle {
     # ignoring vpc_options because it has three subnets, TF only supports two.
     # the rest are ignored so they can be changed by #hotchip
-    ignore_changes = ["elasticsearch_version", "instance_type", "instance_count", "vpc_options"]
+    ignore_changes = ["elasticsearch_version", "instance_type", "cluster_config", "vpc_options"]
   }
 
   encrypt_at_rest = {
