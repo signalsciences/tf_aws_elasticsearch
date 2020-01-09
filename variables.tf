@@ -57,6 +57,11 @@ variable "es_zone_awareness" {
   default     = "false"
 }
 
+variable "es_availability_zone_count" {
+  description = "Number of zones for zone-aware clusters (default 2)"
+  default     = "2"
+}
+
 variable "ebs_volume_size" {
   description = "Optionally use EBS volumes for data storage by specifying volume size in GB (default 0)"
   default     = 0
