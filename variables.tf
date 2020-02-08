@@ -87,8 +87,8 @@ variable "vpc_options" {
   type        = map(string)
 
   default = {
-    security_group_ids = []
-    subnet_ids         = []
+    security_group_ids = ""
+    subnet_ids         = ""
   }
 }
 
