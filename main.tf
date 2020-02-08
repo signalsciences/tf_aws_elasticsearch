@@ -104,8 +104,7 @@ resource "aws_elasticsearch_domain" "es" {
   lifecycle {
     ignore_changes = [
       elasticsearch_version,
-      instance_type,
-      instance_count,
+      cluster_config
     ]
   }
 

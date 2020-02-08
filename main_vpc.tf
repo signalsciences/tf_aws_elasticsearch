@@ -76,7 +76,6 @@ resource "aws_elasticsearch_domain" "es_vpc" {
     # the rest are ignored so they can be changed by #hotchip
     ignore_changes = [
       elasticsearch_version,
-      instance_type,
       cluster_config,
       vpc_options,
     ]
@@ -133,8 +132,8 @@ resource "aws_elasticsearch_domain" "es_vpc" {
       # produced a comprehensive set here. Consider simplifying
       # this after confirming which keys can be set in practice.
 
-      security_group_ids = lookup(vpc_options.value, "security_group_ids", null)
-      subnet_ids         = lookup(vpc_options.value, "subnet_ids", null)
+      security_group_ids = [lookup(vpc_options.value, "security_group_ids", null)]
+      subnet_ids         = [lookup(vpc_options.value, "subnet_ids", null)]
     }
   }
   ebs_options {
