@@ -30,25 +30,25 @@ variable "encrypt_at_rest" {
 
 variable "management_iam_roles" {
   description = "List of IAM role ARNs from which to permit management traffic (default ['*']).  Note that a client must match both the IP address and the IAM role patterns in order to be permitted access."
-  type        = "list"
+  type        = list(string)
   default     = ["*"]
 }
 
 variable "super_management_iam_roles" {
   description = "List of IAM role ARNs from which to permit management traffic (default ['']).  Note that a client must match both the IP address and the IAM role patterns in order to be permitted access."
-  type        = "list"
+  type        = list(string)
   default     = [""]
 }
 
 variable "admin_groups" {
   description = "List of IAM group ARNs from which to permit admin policy attachment."
-  type        = "list"
+  type        = list(string)
   default     = []
 }
 
 variable "management_public_ip_addresses" {
   description = "List of IP addresses from which to permit management traffic (default []).  Note that a client must match both the IP address and the IAM role patterns in order to be permitted access."
-  type        = "list"
+  type        = list(string)
   default     = []
 }
 
@@ -84,7 +84,7 @@ variable "snapshot_start_hour" {
 
 variable "vpc_options" {
   description = "A map of supported vpc options"
-  type        = "map"
+  type        = map(string)
 
   default = {
     security_group_ids = []
@@ -94,7 +94,7 @@ variable "vpc_options" {
 
 variable "tags" {
   description = "tags to apply to all resources"
-  type        = "map"
+  type        = map(string)
   default     = {}
 }
 
@@ -153,4 +153,3 @@ variable "node_to_node_encryption" {
 }
 
 # vim: set et fenc=utf-8 ff=unix ft=terraform sts=2 sw=2 ts=2 : 
-
